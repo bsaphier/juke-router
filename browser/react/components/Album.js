@@ -2,15 +2,6 @@ import React, { Component } from 'react';
 import Songs from '../components/Songs';
 
 class Album extends Component {
-  constructor (props) {
-    super(props);
-    this.state = {
-      album: props.album,
-      currentSong: props.currentSong,
-      isPlaying: props.isPlaying,
-      toggleOne: props.toggleOne
-    }
-  }
 
   componentDidMount () {
     const albumId = this.props.routeParams.albumId;
@@ -20,22 +11,29 @@ class Album extends Component {
   }
 
   render () {
-    console.log(this.state);
-    const state = this.state;
+    const album = this.props.album;
     return (
       <div className="album">
         <div>
-          <h3>{ state.album.name }</h3>
-          <img src={ state.album.imageUrl } className="img-thumbnail" />
+          <h3>{ album.name }</h3>
+          <img src={ album.imageUrl } className="img-thumbnail" />
         </div>
         <Songs
-          songs={state.album.songs}
-          currentSong={state.currentSong}
-          isPlaying={state.isPlaying}
-          toggleOne={state.toggleOne} />
+          songs={album.songs}
+          currentSong={this.props.currentSong}
+          isPlaying={this.props.isPlaying}
+          toggleOne={this.props.toggleOne} />
       </div>
     );
   }
 }
+
+Album.propTypes = {
+  album: React.PropTypes.object,
+  currentSong: React.PropTypes.object,
+  isPlaying: React.PropTypes.bool,
+  toggleOne: React.PropTypes.func,
+  selectAlbum: React.PropTypes.func
+};
 
 export default Album;

@@ -30,10 +30,21 @@ export default class AppContainer extends Component {
       .then(res => res.data)
       .then(album => this.onLoad(convertAlbums(album)));
 
+    axios.get('/api/artists')
+      .then(res => res.data)
+      .then(artists => this.setState({ artists }));
+
     AUDIO.addEventListener('ended', () =>
       this.next());
     AUDIO.addEventListener('timeupdate', () =>
       this.setProgress(AUDIO.currentTime / AUDIO.duration));
+  }
+
+  artistLoad () {
+    axios.get(`/api/artists/${artistId}`)
+      .then(res => res.data)
+      .then(selectedArtist => this.setState({ selectedArtist }));
+/*************WE ARE HERE************/
   }
 
   onLoad (albums) {
@@ -111,7 +122,7 @@ export default class AppContainer extends Component {
         <div className="col-xs-10">
           {
             this.props.children ?
-              React.cloneElement(this.props.children, {   
+              React.cloneElement(this.props.children, {
                 // Album (singular) component's props
                 album: this.state.selectedAlbum,
                 currentSong: this.state.currentSong,
@@ -120,24 +131,13 @@ export default class AppContainer extends Component {
 
                 // Albums (plural) component's props
                 albums: this.state.albums,
-                selectAlbum: this.selectAlbum // note that this.selectAlbum is a method, and this.state.selectedAlbum is the chosen album
+                selectAlbum: this.selectAlbum, // note that this.selectAlbum is a method, and this.state.selectedAlbum is the chosen album
+
+                artists: this.state.artists
 
               })
               : null
           }
-        {/*
-          this.state.selectedAlbum.id ?
-          <Album
-            album={this.state.selectedAlbum}
-            currentSong={this.state.currentSong}
-            isPlaying={this.state.isPlaying}
-            toggleOne={this.toggleOne}
-          /> :
-          <Albums
-            albums={this.state.albums}
-            selectAlbum={this.selectAlbum}
-          />
-        */}
         </div>
         <Player
           currentSong={this.state.currentSong}
