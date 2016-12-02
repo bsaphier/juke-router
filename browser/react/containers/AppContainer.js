@@ -23,6 +23,7 @@ export default class AppContainer extends Component {
     this.prev = this.prev.bind(this);
     this.selectAlbum = this.selectAlbum.bind(this);
     this.deselectAlbum = this.deselectAlbum.bind(this);
+    this.artistLoad = this.artistLoad.bind(this);
   }
 
   componentDidMount () {
@@ -40,11 +41,22 @@ export default class AppContainer extends Component {
       this.setProgress(AUDIO.currentTime / AUDIO.duration));
   }
 
-  artistLoad () {
-    axios.get(`/api/artists/${artistId}`)
-      .then(res => res.data)
-      .then(selectedArtist => this.setState({ selectedArtist }));
-/*************WE ARE HERE************/
+  artistLoad (artistId) {
+    const artistName = axios.get(`/api/artists/${artistId}`);
+
+    const artistAlbums = axios.get(`/api/artists/${artistId}/albums`);
+    const artistSongs = axios.get(`/api/artists/${artistId}/songs`);
+
+    Promise.all([artistName, artistAlbums, artistSongs])
+      .then(ress => ress.map(res => res.data))
+      .then((artistData) => {
+        let albums = convertAlbums(artistData[1]);
+        this.setState({
+          selectedArtist: artistData[0],
+          albums: albums,
+          artistSongs: artistData[2]
+        });
+      });
   }
 
   onLoad (albums) {
@@ -73,6 +85,7 @@ export default class AppContainer extends Component {
   }
 
   startSong (song, list) {
+    console.log('THIS', this);
     this.pause();
     this.load(song, list);
     this.play();
@@ -132,8 +145,12 @@ export default class AppContainer extends Component {
                 // Albums (plural) component's props
                 albums: this.state.albums,
                 selectAlbum: this.selectAlbum, // note that this.selectAlbum is a method, and this.state.selectedAlbum is the chosen album
-
-                artists: this.state.artists
+                // Things that Artist needs
+                artists: this.state.artists,
+                artistLoad: this.artistLoad,
+                selectedArtist: this.state.selectedArtist,
+                artistSongs: this.state.artistSongs,
+                toggleOne: this.toggleOne
 
               })
               : null

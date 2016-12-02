@@ -4,36 +4,37 @@ import axios from 'axios';
 
 import Albums from './Albums';
 import Songs from './Songs';
-import { artistLoad } from '../containers/AppContainer'
+// import { artistLoad } from '../containers/AppContainer'
 
 
 class Artist extends Component {
 
   componentDidMount () {
     const { artistId } = this.props.routeParams;
-
-    console.log(this.props.routeParams);
-
-    //const artistName = axios.get(`/api/artists/${artistId}`);
-/*************WE ARE HERE************/
-    //const artistAlbums = axios.get(`/api/artists/${artistId}/albums`);
-/*************WE ARE HERE************/
-    //const artistSongs = axios.get(`/api/artists/${artistId}/songs`);
-/*************WE ARE HERE************/
-    // Promise.all([artistName, artistAlbums, artistSongs])
-    //       .then(ress => ress.map(res => res.data))
-    //       .then(artistLoad);
+    this.props.artistLoad(artistId);
   }
 
   render () {
-    const artist = this.props.selectedArtist;
-    return (
-      <div>
-        <h3>{artist.name}</h3>
-        {/*<Albums albums={artist.albums} />
-        <Songs songs={artist.songs}/>*/}
-      </div>
-    );
+    const selectedArtist = this.props.selectedArtist;
+    const children = this.props.children;
+    const propsToPassToChildren = {
+          albums: this.props.albums,
+          selectAlbum: this.props.selectedAlbum,
+          songs: this.props.artistSongs,
+          currentSong: this.props.currentSong,
+          isPlaying: this.props.isPlaying,
+          toggle: this.props.toggle,
+          toggleOne: this.props.toggleOne
+    }
+
+    return (<div>
+      <h3>{ selectedArtist.name }</h3>
+      <ul className="nav nav-tabs">
+        <li><Link to={`/artists/${selectedArtist.id}/albums`}>ALBUMS</Link></li>
+        <li><Link to={`/artists/${selectedArtist.id}/songs`}>SONGS</Link></li>
+      </ul>
+      { children && React.cloneElement(children, propsToPassToChildren) }
+    </div>);
   }
 }
 
